@@ -34,7 +34,17 @@ jobs:
           python -m pip install buildozer cython==0.29.36
 
       - name: Build APK with Buildozer
-        run: yes | buildozer android debug
+        run: |
+          set -o pipefail
+          yes | buildozer android debug 2>&1 | tee build.log
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
+          if-no-files-found: error
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
